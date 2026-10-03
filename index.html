@@ -239,12 +239,6 @@
     .delta.up { color: var(--up); background: var(--up-bg); }
     .delta.down { color: var(--down); background: var(--down-bg); }
 
-    .note {
-      margin: 10px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
     .status {
       margin-top: auto;
       padding-top: 18px;
@@ -254,6 +248,8 @@
 
     .card.is-error .status { color: var(--down); }
     .card.is-loading .status { opacity: 0.7; }
+
+    #btc-card { margin-bottom: 70px; }
 
     /* iPad 10.2 landscape: 1080×810 */
     @media (min-width: 960px) and (max-height: 900px) {
@@ -285,7 +281,6 @@
       .price { font-size: 72px; }
       .pair { font-size: 13px; }
       .delta { margin-top: 12px; font-size: 16px; }
-      .note { font-size: 15px; }
       .status { padding-top: 12px; font-size: 13px; }
     }
 
@@ -299,6 +294,7 @@
       header { align-items: flex-end; flex-wrap: wrap; }
       .when { text-align: left; }
       .grid { grid-template-columns: 1fr; }
+      #btc-card { margin-bottom: 0; }
       .card { min-height: 0; padding: 22px 22px 18px; }
       .clock { font-size: 84px; }
       .date { font-size: 32px; }
@@ -314,7 +310,6 @@
       .price { font-size: 80px; }
       .pair { font-size: 14px; }
       .delta { font-size: 18px; padding: 6px 12px; }
-      .note { font-size: 17px; }
       .status { font-size: 14px; }
     }
 
@@ -419,7 +414,6 @@
           <p class="pair">BTC / USDT</p>
           <p class="price" id="btc">—</p>
           <div class="delta" id="btc-delta">—</div>
-          <p class="note" id="btc-note">цена последней сделки</p>
         </div>
         <p class="status" id="btc-status">Загрузка…</p>
       </article>
