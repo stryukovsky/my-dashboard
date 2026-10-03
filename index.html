@@ -78,13 +78,13 @@
       display: grid;
       grid-template-columns: 1.15fr 1fr;
       gap: 14px;
-      align-items: stretch;
+      align-items: start;
     }
 
     .card {
       display: flex;
       flex-direction: column;
-      min-height: 360px;
+      min-height: 0;
       padding: 22px 20px 16px;
       background: var(--card);
       border: 1px solid var(--line);
@@ -172,37 +172,12 @@
       vertical-align: baseline;
     }
 
-    .desc {
-      margin-top: 6px;
-      font-size: 18px;
-    }
-
-    .feel {
-      margin: 14px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 16px;
-      margin: 22px 0 0;
-    }
-
-    .stats div { min-width: 0; }
-
-    dt {
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    dd {
-      margin: 2px 0 0;
-      font-size: 20px;
-      font-variant-numeric: tabular-nums;
+    .rain {
+      margin: 18px 0 0;
+      font-size: 32px;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
     }
 
     .price-block { margin-top: 8px; }
@@ -249,8 +224,6 @@
     .card.is-error .status { color: var(--down); }
     .card.is-loading .status { opacity: 0.7; }
 
-    #btc-card { margin-bottom: 70px; }
-
     /* iPad 10.2 landscape: 1080×810 */
     @media (min-width: 960px) and (max-height: 900px) {
       .wrap {
@@ -271,13 +244,9 @@
       .label { font-size: 17px; }
       .src { font-size: 14px; }
       .temp { font-size: 76px; }
-      .desc { font-size: 20px; }
-      .feel { margin-top: 8px; font-size: 16px; }
+      .rain { font-size: 34px; }
       .sky { width: 64px; height: 64px; border-radius: 18px; }
       .sky .ico { width: 36px; height: 36px; }
-      .stats { margin-top: 14px; gap: 8px 14px; }
-      dt { font-size: 12px; }
-      dd { font-size: 18px; }
       .price { font-size: 72px; }
       .pair { font-size: 13px; }
       .delta { margin-top: 12px; font-size: 16px; }
@@ -294,19 +263,15 @@
       header { align-items: flex-end; flex-wrap: wrap; }
       .when { text-align: left; }
       .grid { grid-template-columns: 1fr; }
-      #btc-card { margin-bottom: 0; }
       .card { min-height: 0; padding: 22px 22px 18px; }
       .clock { font-size: 84px; }
       .date { font-size: 32px; }
       .label { font-size: 18px; }
       .src { font-size: 15px; }
       .temp { font-size: 96px; }
-      .desc { font-size: 24px; }
-      .feel { font-size: 18px; }
+      .rain { font-size: 40px; }
       .sky { width: 88px; height: 88px; }
       .sky .ico { width: 48px; height: 48px; }
-      dt { font-size: 13px; }
-      dd { font-size: 24px; }
       .price { font-size: 80px; }
       .pair { font-size: 14px; }
       .delta { font-size: 18px; padding: 6px 12px; }
@@ -315,8 +280,8 @@
 
     @media (max-width: 520px) {
       .temp { font-size: 72px; }
+      .rain { font-size: 28px; }
       .price { font-size: 48px; }
-      dd { font-size: 18px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -338,7 +303,7 @@
       <article class="card weather is-loading" id="weather-card" data-kind="cloud">
         <div class="card-top">
           <h2 class="label">Погода</h2>
-          <a class="src" href="https://www.gismeteo.ru/weather-moscow-4368/now/" target="_blank" rel="noopener">Gismeteo</a>
+          <a class="src" href="https://www.gismeteo.ru/weather-moscow-4368/" target="_blank" rel="noopener">Gismeteo</a>
         </div>
         <div class="hero">
           <div class="sky" id="sky" data-kind="cloud">
@@ -390,18 +355,9 @@
           </div>
           <div>
             <div class="temp" id="temp">—</div>
-            <div class="desc" id="desc">Загрузка</div>
           </div>
         </div>
-        <p class="feel" id="feel"></p>
-        <dl class="stats">
-          <div><dt>Ветер</dt><dd id="wind">—</dd></div>
-          <div><dt>Давление</dt><dd id="pressure">—</dd></div>
-          <div><dt>Влажность</dt><dd id="humidity">—</dd></div>
-          <div><dt>Вода</dt><dd id="water">—</dd></div>
-          <div><dt>Восход</dt><dd id="sunrise">—</dd></div>
-          <div><dt>Заход</dt><dd id="sunset">—</dd></div>
-        </dl>
+        <p class="rain" id="rain">—</p>
         <p class="status" id="weather-status">Загрузка…</p>
       </article>
 
@@ -422,7 +378,7 @@
   </div>
 
   <script>
-    const WEATHER_URL = "https://www.gismeteo.ru/weather-moscow-4368/now/";
+    const WEATHER_URL = "https://www.gismeteo.ru/weather-moscow-4368/";
     const BTC_URL = "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT";
     const TZ = "Europe/Moscow";
 
@@ -430,8 +386,6 @@
     const btcFmt = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
     const clockFmt = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
     const dateFmt = new Intl.DateTimeFormat("ru-RU", { weekday: "long", day: "numeric", month: "long", timeZone: TZ });
-    const hmFmt = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
-
     const updatedAt = { weather: 0, btc: 0 };
     const inflight = new Set();
 
@@ -457,16 +411,42 @@
       return h + " ч назад";
     }
 
-    function kindOf(desc) {
-      const d = desc.toLowerCase();
-      if (d.includes("гроз")) return "storm";
-      if (d.includes("снег") || d.includes("метел")) return "snow";
-      if (d.includes("дожд") || d.includes("лив") || d.includes("морось")) return "rain";
-      if (d.includes("туман") || d.includes("дымк") || d.includes("мгла")) return "fog";
-      if (d.includes("пасмур")) return "overcast";
-      if (d.includes("малообл") || d.includes("перемен")) return "partly";
-      if (d.includes("ясно") || d.includes("солнеч")) return "clear";
+    function kindOf(desc, icon) {
+      const d = (desc || "").toLowerCase();
+      const c = (icon || "").toLowerCase();
+      if (d.includes("гроз") || /_t/.test(c)) return "storm";
+      if (d.includes("снег") || d.includes("метел") || /_s/.test(c)) return "snow";
+      if (d.includes("дожд") || d.includes("лив") || d.includes("морось") || /_r/.test(c)) return "rain";
+      if (d.includes("туман") || d.includes("дымк") || d.includes("мгла") || /_f/.test(c)) return "fog";
+      if (d.includes("пасмур") || /_c3/.test(c)) return "overcast";
+      if (d.includes("малообл") || d.includes("перемен") || /_c1/.test(c)) return "partly";
+      if (d.includes("ясно") || d.includes("солнеч") || c === "d" || c === "n") return "clear";
       return "cloud";
+    }
+
+    function rowAfter(html, marker) {
+      const start = html.indexOf(marker);
+      if (start < 0) return "";
+      const end = html.indexOf('data-row="', start + marker.length);
+      return html.slice(start, end > start ? end : start + 6000);
+    }
+
+    function rainToday(html) {
+      const amounts = [...rowAfter(html, 'data-row="precipitation-bars"').matchAll(/class="item-unit">\s*([^<]+)/g)];
+      if (!amounts.length) return null;
+      const wet = /дожд|лив|морось|гроз|снег/;
+      for (const item of amounts) {
+        const raw = textOf(item[1]).toLowerCase().replace(",", ".");
+        if (wet.test(raw)) return true;
+        const n = parseFloat(raw.replace(/[^\d.]/g, ""));
+        if (Number.isFinite(n) && n > 0) return true;
+      }
+      const icons = rowAfter(html, 'data-row="icon-tooltip"');
+      const tips = [...icons.matchAll(/data-tooltip="([^"]+)"/g)].map(function (m) { return m[1].toLowerCase(); });
+      const hrefs = [...icons.matchAll(/href="#([^"]+)"/g)].map(function (m) { return m[1].toLowerCase(); });
+      if (tips.some(function (tip) { return wet.test(tip); })) return true;
+      if (hrefs.some(function (href) { return /_r|_s|_t/.test(href); })) return true;
+      return false;
     }
 
     function textOf(value) {
@@ -480,33 +460,18 @@
     }
 
     function parseWeather(html) {
-      const start = html.indexOf('data-widget="weather-now"');
-      if (start < 0) throw new Error("На странице нет блока «сейчас»");
-      const end = html.indexOf("section-media", start);
-      const w = html.slice(start, end > start ? end : start + 12000);
-      const temp = pick(w, /class="now-weather">\s*<temperature-value\b[^>]*value="(-?\d+(?:[.,]\d+)?)"/);
+      const tab = html.match(/<a class="weathertab"[\s\S]*?href="\/weather-moscow-4368\/now\/"[\s\S]*?<\/a>/);
+      if (!tab) throw new Error("Не нашёл текущую погоду");
+      const temp = pick(tab[0], /<temperature-value\b[^>]*value="(-?\d+(?:[.,]\d+)?)"/);
       if (!temp) throw new Error("Не нашёл температуру");
-      const astro = {};
-      const re = /<time-value class="time" timestamp="(\d+)"[^>]*>\s*<\/time-value>\s*<div class="caption">([^<]+)<\/div>/g;
-      for (const m of w.matchAll(re)) astro[textOf(m[2])] = Number(m[1]);
+      const rain = rainToday(html);
+      if (rain === null) throw new Error("Не нашёл прогноз осадков");
       return {
         temp,
-        feel: pick(w, /class="now-feel">[\s\S]*?<temperature-value\b[^>]*value="(-?\d+(?:[.,]\d+)?)"/),
-        desc: pick(w, /class="now-desc">\s*([^<]+)/),
-        wind: pick(w, /Ветер[\s\S]*?<speed-value\b[^>]*value="(-?\d+(?:[.,]\d+)?)"/),
-        dir: pick(w, /from-unit="ms">\s*<\/speed-value>\s*<br\s*\/?>\s*([^<]+)/),
-        press: pick(w, /Давление[\s\S]*?<pressure-value\b[^>]*value="(-?\d+(?:[.,]\d+)?)"/),
-        hum: pick(w, /Влажность[\s\S]*?<div class="item-value">\s*(-?\d+(?:[.,]\d+)?)/),
-        water: pick(w, /Вода[\s\S]*?<temperature-value\b[^>]*value="(-?\d+(?:[.,]\d+)?)"/),
-        obs: Number(pick(w, /class="now-localdate"\s+timestamp="(\d+)"/)) || 0,
-        sunrise: astro["Восход"] || 0,
-        sunset: astro["Заход"] || 0
+        icon: pick(tab[0], /href="#([^"]+)"/),
+        desc: pick(tab[0], /data-tooltip="([^"]+)"/),
+        rain: rain
       };
-    }
-
-    function hm(unix) {
-      if (!unix) return "—";
-      return hmFmt.format(new Date(unix * 1000));
     }
 
     function setFigure(id, value, unit) {
@@ -556,21 +521,13 @@
       mark(card, "loading");
       try {
         const data = parseWeather(await getText(WEATHER_URL));
-        const kind = kindOf(data.desc || "");
+        const kind = kindOf(data.desc, data.icon);
         card.dataset.kind = kind;
         document.getElementById("sky").dataset.kind = kind;
         setFigure("temp", data.temp, "°");
-        document.getElementById("desc").textContent = data.desc || "Сейчас";
-        document.getElementById("feel").textContent = data.feel ? "ощущается как " + data.feel + "°" : "";
-        document.getElementById("wind").textContent = [data.wind && data.wind + " м/с", data.dir].filter(Boolean).join(", ") || "—";
-        document.getElementById("pressure").textContent = data.press ? data.press + " мм рт. ст." : "—";
-        document.getElementById("humidity").textContent = data.hum ? data.hum + "%" : "—";
-        document.getElementById("water").textContent = data.water ? data.water + "°" : "—";
-        document.getElementById("sunrise").textContent = hm(data.sunrise);
-        document.getElementById("sunset").textContent = hm(data.sunset);
+        document.getElementById("rain").textContent = data.rain ? "дождь будет" : "дождя не будет";
         updatedAt.weather = Date.now();
-        card.querySelector(".status").dataset.extra = data.obs ? " · на " + hm(data.obs) : "";
-        mark(card, "ready", "обновлено только что" + (card.querySelector(".status").dataset.extra || ""));
+        mark(card, "ready", "обновлено только что");
         document.title = data.temp + "°";
       } catch (err) {
         mark(card, "error", "Не удалось прочитать Gismeteo. " + (err.message || "ошибка сети"));
