@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Сводка</title>
+  <title>Погода</title>
   <style>
     :root {
       --ink: #1c1915;
@@ -43,42 +43,21 @@
       margin-bottom: 18px;
     }
 
-    .kicker {
-      margin: 0 0 4px;
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      font-family: Georgia, "Iowan Old Style", Palatino, serif;
-      font-size: 40px;
-      font-weight: 500;
-      letter-spacing: -0.03em;
-      line-height: 0.95;
-    }
-
-    .tools {
-      display: flex;
-      align-items: flex-end;
-      gap: 18px;
-    }
-
-    .when { text-align: right; }
+    .when { text-align: left; }
 
     .clock {
       font-variant-numeric: tabular-nums;
-      font-size: 32px;
+      font-size: 72px;
+      font-weight: 560;
       letter-spacing: -0.04em;
-      line-height: 1;
+      line-height: 0.9;
     }
 
     .date {
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 14px;
+      margin-top: 6px;
+      color: var(--ink);
+      font-size: 28px;
+      line-height: 1.1;
     }
 
     button {
@@ -97,7 +76,7 @@
 
     .grid {
       display: grid;
-      grid-template-columns: 1.2fr 1fr 1fr;
+      grid-template-columns: 1.15fr 1fr;
       gap: 14px;
       align-items: stretch;
     }
@@ -238,7 +217,7 @@
 
     .price {
       margin: 8px 0 0;
-      font-size: 56px;
+      font-size: 72px;
       font-weight: 560;
       letter-spacing: -0.03em;
       line-height: 1;
@@ -284,9 +263,8 @@
       }
 
       header { margin-bottom: 12px; }
-      h1 { font-size: 34px; }
-      .clock { font-size: 30px; }
-      .date { font-size: 15px; }
+      .clock { font-size: 80px; }
+      .date { font-size: 30px; }
 
       .card {
         min-height: 0;
@@ -304,7 +282,7 @@
       .stats { margin-top: 14px; gap: 8px 14px; }
       dt { font-size: 12px; }
       dd { font-size: 18px; }
-      .price { font-size: 56px; }
+      .price { font-size: 72px; }
       .pair { font-size: 13px; }
       .delta { margin-top: 12px; font-size: 16px; }
       .note { font-size: 15px; }
@@ -318,13 +296,12 @@
         padding: 18px 0 28px;
       }
 
-      header, .tools { align-items: flex-start; flex-wrap: wrap; }
+      header { align-items: flex-end; flex-wrap: wrap; }
       .when { text-align: left; }
       .grid { grid-template-columns: 1fr; }
       .card { min-height: 0; padding: 22px 22px 18px; }
-      h1 { font-size: 40px; }
-      .clock { font-size: 34px; }
-      .date { font-size: 16px; }
+      .clock { font-size: 84px; }
+      .date { font-size: 32px; }
       .label { font-size: 18px; }
       .src { font-size: 15px; }
       .temp { font-size: 96px; }
@@ -334,7 +311,7 @@
       .sky .ico { width: 48px; height: 48px; }
       dt { font-size: 13px; }
       dd { font-size: 24px; }
-      .price { font-size: 72px; }
+      .price { font-size: 80px; }
       .pair { font-size: 14px; }
       .delta { font-size: 18px; padding: 6px 12px; }
       .note { font-size: 17px; }
@@ -355,17 +332,11 @@
 <body>
   <div class="wrap">
     <header>
-      <div>
-        <p class="kicker">Москва</p>
-        <h1>Сводка</h1>
+      <div class="when">
+        <div class="clock" id="clock">—</div>
+        <div class="date" id="today">—</div>
       </div>
-      <div class="tools">
-        <div class="when">
-          <div class="clock" id="clock">—</div>
-          <div class="date" id="today">—</div>
-        </div>
-        <button type="button" id="refresh">Обновить</button>
-      </div>
+      <button type="button" id="refresh">Обновить</button>
     </header>
 
     <main class="grid">
@@ -453,26 +424,12 @@
         <p class="status" id="btc-status">Загрузка…</p>
       </article>
 
-      <article class="card is-loading" id="usd-card">
-        <div class="card-top">
-          <h2 class="label">Доллар</h2>
-          <a class="src" href="https://www.cbr.ru/currency_base/daily/" target="_blank" rel="noopener">Банк России</a>
-        </div>
-        <div class="price-block">
-          <p class="pair">USD / RUB</p>
-          <p class="price" id="usd">—</p>
-          <div class="delta" id="usd-delta">—</div>
-          <p class="note" id="usd-note">официальный курс</p>
-        </div>
-        <p class="status" id="usd-status">Загрузка…</p>
-      </article>
     </main>
   </div>
 
   <script>
     const WEATHER_URL = "https://www.gismeteo.ru/weather-moscow-4368/now/";
     const BTC_URL = "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT";
-    const USD_URL = "https://www.cbr-xml-daily.ru/daily_json.js";
     const TZ = "Europe/Moscow";
 
     const money = new Intl.NumberFormat("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -480,16 +437,15 @@
     const clockFmt = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
     const dateFmt = new Intl.DateTimeFormat("ru-RU", { weekday: "long", day: "numeric", month: "long", timeZone: TZ });
     const hmFmt = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
-    const dayFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", timeZone: TZ });
 
-    const updatedAt = { weather: 0, btc: 0, usd: 0 };
+    const updatedAt = { weather: 0, btc: 0 };
     const inflight = new Set();
 
     function tick() {
       const now = new Date();
       document.getElementById("clock").textContent = clockFmt.format(now);
       document.getElementById("today").textContent = dateFmt.format(now);
-      for (const key of ["weather", "btc", "usd"]) {
+      for (const key of ["weather", "btc"]) {
         const at = updatedAt[key];
         const el = document.getElementById(key + "-status");
         if (!at || !el || el.dataset.mode === "error") continue;
@@ -621,7 +577,7 @@
         updatedAt.weather = Date.now();
         card.querySelector(".status").dataset.extra = data.obs ? " · на " + hm(data.obs) : "";
         mark(card, "ready", "обновлено только что" + (card.querySelector(".status").dataset.extra || ""));
-        document.title = data.temp + "° · сводка";
+        document.title = data.temp + "°";
       } catch (err) {
         mark(card, "error", "Не удалось прочитать Gismeteo. " + (err.message || "ошибка сети"));
       } finally {
@@ -651,39 +607,9 @@
       }
     }
 
-    async function loadUsd() {
-      const card = document.getElementById("usd-card");
-      if (inflight.has("usd")) return;
-      inflight.add("usd");
-      mark(card, "loading");
-      try {
-        const data = JSON.parse(await getText(USD_URL));
-        const row = data.Valute && data.Valute.USD;
-        if (!row) throw new Error("в ответе нет USD");
-        const nominal = row.Nominal || 1;
-        const value = row.Value / nominal;
-        const prev = row.Previous / nominal;
-        const delta = value - prev;
-        setFigure("usd", money.format(value), "₽");
-        const sign = delta > 0 ? "+" : "";
-        setDelta("usd-delta", delta, sign + money.format(delta) + " ₽ к прошлому курсу");
-        const when = data.Date ? dayFmt.format(new Date(data.Date)) : "";
-        document.getElementById("usd-note").textContent = when
-          ? "курс ЦБ на " + when + " · вчера " + money.format(prev) + " ₽"
-          : "официальный курс · вчера " + money.format(prev) + " ₽";
-        updatedAt.usd = Date.now();
-        mark(card, "ready", "обновлено только что");
-      } catch (err) {
-        mark(card, "error", "Не удалось прочитать курс ЦБ. " + (err.message || "ошибка сети"));
-      } finally {
-        inflight.delete("usd");
-      }
-    }
-
     function refreshAll() {
       loadWeather();
       loadBtc();
-      loadUsd();
     }
 
     document.getElementById("refresh").addEventListener("click", function () {
@@ -702,8 +628,7 @@
     refreshAll();
     setInterval(loadBtc, 20000);
     setInterval(loadWeather, 5 * 60 * 1000);
-    setInterval(loadUsd, 60 * 60 * 1000);
   </script>
-  <noscript>Нужен JavaScript: страница сама забирает погоду, биткоин и курс доллара.</noscript>
+  <noscript>Нужен JavaScript: страница сама забирает погоду и биткоин.</noscript>
 </body>
 </html>
